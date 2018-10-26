@@ -3,7 +3,8 @@
     "version": "0.0.1",
     "description": "",
     "scripts": {
-        "test": "truffle test"
+        "test": "truffle test",
+        "ganache": "ganache -a 10 -b 3 -s seed_to_use_same_data"
     },
     "dependencies": {
         "eth-ens-namehash": "^2.0.8",
