@@ -1,0 +1,11 @@
+{
+    "name": "geography_frontend",
+    "version": "0.0.1",
+    "description": "",
+    "scripts": {
+        "serve": "lite-server"
+    },
+    "dependencies": {
+        "lite-server": "^2.4.0"
+    }
+}
