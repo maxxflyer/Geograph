@@ -108,11 +108,9 @@ CONTENT:<br><br>
 <script src="js/bundle.js"></script>
 <script>
 
-var statusChannel="https://get.status.im/chat/public/geography";
+var squatplot;
 
-function squatplot(){
-    //TODO
-}
+var statusChannel="https://get.status.im/chat/public/geography";
 
 function openStatus(){
     window.open(statusChannel,'_blank');
@@ -187,6 +185,20 @@ Data.setup({
     })
 
 function start({web3, accounts, networkId, contracts}){
+
+    squatplot = function(){
+        contracts.registrar.methods.register(web3.utils.sha3("dhshd"), accounts[0])
+            .send({from:accounts[0],gas:4000000})
+            .then(function(receipt){
+                console.log(receipt);
+                //TODO
+            })
+            .catch(function(error){
+                console.error(error);
+                //TODO
+            })
+    }
+
     var osmUrl = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
         osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
         osm = L.tileLayer(osmUrl, {
