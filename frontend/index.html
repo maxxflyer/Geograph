@@ -1,4 +1,4 @@
-<html>
+﻿<html>
     <head>
         <title>Earth's Own Alternate Layer</title>
 <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
@@ -18,7 +18,14 @@
 <div style="position: absolute; right:33px; width: 60px; height: 60px; top: 120px; border: solid 2px #204177; border-radius: 10px; background:white">
 <img src="icons/ens.jpg" style=" width: 50px; height: 50px; margin-left: 5px; margin-top: 5px;"></div>
 <img src="icons/book.jpg" style="position:absolute; right:34px; width: 62px; top: 205px;" onclick="show(document.getElementById('panel'));">
-<div id="panel" style="position: absolute; display: show; top : 0px; right: 0px;background: white; border-left: solid 1px grey; width: 300px; height: 100%">
+
+<div  id="metamask" style="position: absolute; width: 100%; top: 0px; display: none;">
+<div style=" border: solid 1px grey; background: white; width: 400px; height: 100px;  margin:auto; top: 0px;border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;">
+<div style="width: 133px; float: left; padding-top: 40px; text-align: center">ACTIVATE</div><div style="width: 133px; float: left; text-align: center;"><img src="icons/metamask.png" style="width: 90px;"></div><div style="padding-top: 40px; text-align: center; width: 133px; float: left"><input type="button" value="RELOAD" onclick="location.reload()"></div>
+</div>
+</div>
+
+<div id="panel" style="position: absolute; display: none; top : 0px; right: 0px;background: white; border-left: solid 1px grey; width: 300px; height: 100%">
 <img src="icons/close.png" style="width: 30px; margin-left: 20px; margin-top: 20px;" onclick="hide(document.getElementById('panel'));">
 <div style="margin-top: 30px;margin-left: 20px;">Coordinates:<br>
 <div id="plotCoords" style="margin-bottom:15px; margin-top: 5px">130&deg;12'34"N 035&deg;23'12"W</div>
@@ -29,10 +36,14 @@ Owner:<br>
 
 Layers:<br>
 <select>
-  <option value="volvo">Main</option>
-  <option value="saab">Saab</option>
-  <option value="mercedes">Mercedes</option>
-  <option value="audi">Audi</option>
+  <option value="main">Main</option>
+  <option value="text">Text</option>
+  <option value="links">Links</option>
+  <option value="feeds">Feeds</option>
+  <option value="3d">3D</option>
+  <option value="dapps">Dapps</option>
+  <option value="dapps">Private 1</option>
+  <option value="dapps">Private 2</option>
 </select>
 <br><br>
 
@@ -40,19 +51,78 @@ Layers:<br>
 Parcels:<br>
 <select>
   <option value="volvo">My parcel</option>
-  <option value="saab">Saab</option>
-  <option value="mercedes">Mercedes</option>
-  <option value="audi">Audi</option>
+  <option value="saab">parcel 11</option>
+  <option value="mercedes">Jack Parcel</option>
+  <option value="audi">Supermarket</option>
+  <option value="audi">Casino</option>
 </select>
 
 
+<input type="button" value="TOKENIZE" style="margin-top: 50px; width: 200px;" onclick="opentokenpanel()"><br>
+<input type="button" value="POST CONTENT" style="margin-top:15px; width: 200px;" onclick="openpostpanel()"><br>
+<input type="button" value="BUY LAYER" style="margin-top: 15px;  width: 200px;" disabled><br>
+<input type="button" value="BUY PARCEL" style="margin-top:  15px;  width: 200px;" disabled>
+</div>
 
-<input type="button" value="POST CONTENT" style="margin-top: 50px; width: 200px;"><br>
-<input type="button" value="BUY LAYER" style="margin-top: 15px;  width: 200px;"><br>
-<input type="button" value="BUY PARCEL" style="margin-top:  15px;  width: 200px;">
 </div>
+
+
+<div id="tokenpanel" style="padding-left: 20px;position: absolute; display: none; top : 0px; right: 0px;background: white; border-left: solid 1px grey; width: 300px; height: 100%">
+<img src="icons/close.png" style="width: 30px; margin-left: 0px; margin-top: 20px;" onclick="hide(document.getElementById('tokenpanel'));">
+<br><br><br>
+YOU OWN THIS PLOT!<br><br>
+
+<form action="">
+  <input type="radio" name="gender" value="male"> DAO tokens<br>
+  <input type="radio" name="gender" value="female"> Utility<br>
+</form>
+<br><br>
+Token Name:<br><br>
+<input type="text" style="200px"><br><br>
+Total Supply:<br><br>
+<input type="text" style="200px"><br><br>
+Decimals:<br><br>
+<input type="text" style="200px"><br><br>
+<input type="submit" value="CREATE TOKENS"> ( 10 DAI )
+
 </div>
+
+<div id="postpanel" style="padding-left: 20px;position: absolute; display: none; top : 0px; right: 0px;background: white; border-left: solid 1px grey; width: 300px; height: 100%">
+<img src="icons/close.png" style="width: 30px; margin-left: 0px; margin-top: 20px;" onclick="hide(document.getElementById('postpanel'));">
+<br><br><br>
+CONTENT:<br><br>
+<input type="text" style="200px"><br><br>
+<input type="submit" value="POST"> ( 0.1 DAI )
+
+</div>
+
+<script src="js/web3.v1.0.0-beta.36.min.js"></script>
+<script src="js/bundle.js"></script>
 <script>
+function show (elements) {
+  elements = elements.length ? elements : [elements];
+  for (var index = 0; index < elements.length; index++) {
+    elements[index].style.display = 'inline-block';
+  }
+}
+    Data.setup({
+        ens: '0xcf8e44e679af8ab222f93b9cc18311c7d4f7ba0a',
+        registrar: '0x9487ce2bdf902fa2215350bf96ff6b46766642b4',
+        defaultResolver: '0x2f445fa4d62fa82fdc40fc4dd7e168a242ad7e2f'
+    })
+        .then(function({web3, accounts, networkId, contracts}){
+            console.log('web3 connected to network ' + networkId + ' with accounts ' + accounts);
+
+            start({web3, accounts, networkId, contracts})
+
+        })
+        .catch(function(error){
+            console.error(error);
+		show(document.getElementById('metamask'));
+        })
+
+  function start({web3, accounts, networkId, contracts}){
+	
  
 	 	var osmUrl = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
 	 	    osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -76,7 +146,7 @@ var statusChannel="https://get.status.im/chat/public/geography";
 
 	 	// Script for adding marker on map click
 	 	function onMapClick(e) {
-
+if(e.latlng.lat>map.getCenter().lat-0.001)if(e.latlng.lat<map.getCenter().lat+0.001)if(e.latlng.lng>map.getCenter().lng-0.001)if(e.latlng.lng<map.getCenter().lng+0.001){
 	 	    var marker = L.marker(e.latlng, {
 	 	        draggable: true,
 	 	        title: "Resource location",
@@ -84,7 +154,8 @@ var statusChannel="https://get.status.im/chat/public/geography";
 	 	        riseOnHover: true
 	 	    }).addTo(map)
 	 	        .bindPopup(e.latlng.toString()).openPopup();
-
+show(document.getElementById('postpanel'));
+}
 	 	    // Update marker on changing it's position
 	 	    marker.on("dragend", function (ev) {
 
@@ -228,36 +299,33 @@ function hide (elements) {
   }
 }
 
-function show (elements) {
-  elements = elements.length ? elements : [elements];
-  for (var index = 0; index < elements.length; index++) {
-    elements[index].style.display = 'inline-block';
-  }
+
+
+function openpostpanel(){
+hide(document.getElementById('panel'));
+show(document.getElementById('postpanel'));
+}
+
+function opentokenpanel(){
+hide(document.getElementById('panel'));
+show(document.getElementById('tokenpanel'));
+}
+
+function checkOwnership(coordinates){
+return contracts.ens.methods.owner(namehash.hash(coordinates)).call()
+}
+
+checkOwnership("ghdsghdgh.geo")
+	.then(function(owner){
+		console.log(owner != "0x0000000000000000000000000000000000000000");
+	})
+	.catch(function(error){
+		console.error(error);
+	});
+
 }
 </script>
 
-<script src="js/web3.v1.0.0-beta.36.min.js"></script>
-<script src="js/bundle.js"></script>
-<script>
-    Data.setup({
-        ens: '0xeb051b42df6e68b80a9adeb3c91add90cb9a9178',
-        registrar: '0xf84288e5fbdf8d2add7ef989945273d96f6349a0',
-        defaultResolver: '0x13d72dab58e8ab56bc26953c296ad693df586ecc'
-    })
-        .then(function({web3, accounts, networkId, contracts}){
-            console.log('web3 connected to netwotk ' + networkId + ' with accounts ' + accounts);
-            const location = '7638n675e.geo';
-            contracts.ens.methods.owner(namehash.hash(location)).call()
-                .then(function(registeredOwner){
-                    console.log(registeredOwner);
-                })
-            
-
-        })
-        .catch(function(error){
-            console.error(error);
-        })
-</script>
     </body>
 
 
