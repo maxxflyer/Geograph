@@ -16,7 +16,7 @@
         <div id="map"></div>
 <img src="icons/status.png" style="position:absolute; right:30px; width: 70px; top: 30px;" onclick="openStatus()">
 <div style="position: absolute; right:33px; width: 60px; height: 60px; top: 120px; border: solid 2px #204177; border-radius: 10px; background:white">
-<img src="icons/ens.jpg" style=" width: 50px; height: 50px; margin-left: 5px; margin-top: 5px;"></div>
+<img src="icons/ens.jpg" style=" width: 50px; height: 50px; margin-left: 5px; margin-top: 5px;" onclick="openenspanel()"></div>
 <img src="icons/book.jpg" style="position:absolute; right:34px; width: 62px; top: 205px;" onclick="show(document.getElementById('panel'));">
 
 <div  id="metamask" style="position: absolute; width: 100%; top: 0px; display: none;">
@@ -67,6 +67,16 @@ Parcels:<br>
 </div>
 
 
+<div id="enspanel" style="position: absolute; display: none; top : 0px; right: 0px;background: white; border-left: solid 1px grey; width: 300px; height: 100%">
+<img src="icons/close.png" style="width: 30px; margin-left: 20px; margin-top: 20px;" onclick="hide(document.getElementById('enspanel'));">
+<br><br>
+<div style="margin-left: 20px;">This Plot has no owner!</div>
+<input type="button" value="SQUAT PLOT" style="margin-left: 20px; margin-top: 20px; width: 200px;" onclick="squatplot()"><br>
+
+
+
+</div>
+
 <div id="tokenpanel" style="padding-left: 20px;position: absolute; display: none; top : 0px; right: 0px;background: white; border-left: solid 1px grey; width: 300px; height: 100%">
 <img src="icons/close.png" style="width: 30px; margin-left: 0px; margin-top: 20px;" onclick="hide(document.getElementById('tokenpanel'));">
 <br><br><br>
@@ -99,6 +109,40 @@ CONTENT:<br><br>
 <script src="js/web3.v1.0.0-beta.36.min.js"></script>
 <script src="js/bundle.js"></script>
 <script>
+var statusChannel="https://get.status.im/chat/public/geography";
+function squatplot(){
+
+}
+
+   function openStatus(){
+window.open(statusChannel,'_blank');
+}
+
+function hide (elements) {
+  elements = elements.length ? elements : [elements];
+  for (var index = 0; index < elements.length; index++) {
+    elements[index].style.display = 'none';
+  }
+}
+
+
+
+function openpostpanel(){
+hide(document.getElementById('panel'));
+show(document.getElementById('postpanel'));
+}
+
+
+
+function opentokenpanel(){
+hide(document.getElementById('panel'));
+show(document.getElementById('tokenpanel'));
+}
+
+
+function openenspanel(){
+show(document.getElementById('enspanel'));
+}
 function show (elements) {
   elements = elements.length ? elements : [elements];
   for (var index = 0; index < elements.length; index++) {
@@ -140,7 +184,7 @@ function show (elements) {
         var plotBL= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
         var plotBR= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
 var locX=44.53520899999999,locY=11.531547000000046;
-var statusChannel="https://get.status.im/chat/public/geography";
+
 	 	// initialize the map on the "map" div with a given center and zoom
 	 	var map = L.map('map').setView([44.53520899999999,11.531547000000046], 12).addLayer(osm);
 
@@ -192,7 +236,7 @@ show(document.getElementById('postpanel'));
 	}
 
 //||(locX<map.getCenter().lat-0.001)||(locY>map.getCenter().lng+0.001)||(locY<map.getCenter().lng-0.001)){
-
+statusChannel="https://get.status.im/chat/public/"+map.getCenter().lat+"-"+map.getCenter().lng;
 });
 
 
@@ -288,28 +332,8 @@ plotBR.addTo(map);
 console.log("done");
     }
     
-   function openStatus(){
-window.open(statusChannel,'_blank');
-}
-
-function hide (elements) {
-  elements = elements.length ? elements : [elements];
-  for (var index = 0; index < elements.length; index++) {
-    elements[index].style.display = 'none';
-  }
-}
 
 
-
-function openpostpanel(){
-hide(document.getElementById('panel'));
-show(document.getElementById('postpanel'));
-}
-
-function opentokenpanel(){
-hide(document.getElementById('panel'));
-show(document.getElementById('tokenpanel'));
-}
 
 function checkOwnership(coordinates){
 return contracts.ens.methods.owner(namehash.hash(coordinates)).call()
