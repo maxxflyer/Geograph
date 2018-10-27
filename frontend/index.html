@@ -1,6 +1,240 @@
 <html>
-    <head></head>
+    <head>
+<script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+<link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css">
+<style>
+#map {
+    height: 100%;
+    width: 100%;
+}
+</style>
+
+</head>
     <body>
-        reload on the fly
+
+        <div id="map"></div>
+<img src="icons/status.png" style="position:absolute; right:30px; width: 70px; top: 30px;" onclick="openStatus()">
+<div style="position: absolute; right:33px; width: 60px; height: 60px; top: 120px; border: solid 2px #204177; border-radius: 10px; background:white">
+<img src="icons/ens.jpg" style=" width: 50px; height: 50px; margin-left: 5px; margin-top: 5px;"></div>
+<img src="icons/book.jpg" style="position:absolute; right:34px; width: 62px; top: 205px;" onclick="show(document.getElementById('panel'));">
+<div id="panel" style="position: absolute; display: show; top : 0px; right: 0px;background: white; border-left: solid 1px grey; width: 300px; height: 100%">
+<img src="icons/close.png" style="width: 30px; margin-left: 20px; margin-top: 20px;" onclick="hide(document.getElementById('panel'));">
+<div style="margin-top: 30px;margin-left: 20px;">Coordinates:<br>
+<div id="plotCoords" style="margin-bottom:15px; margin-top: 5px">130&deg;12'34"N 035&deg;23'12"W</div>
+Plot Name:<br>
+<div id="plotName" style="margin-bottom:15px; margin-top: 5px; font-weight: bold">vatican state</div>
+Owner:<br>
+<div id="plotOwner" style="margin-bottom:15px; margin-top: 5px; font-size: 12px"><a href="https://etherscan.io/address/0xf84288E5fBdF8D2add7eF989945273d96F6349a0">0xf84288E5fBdF8D2add7eF989945273d96F6349a0</a></div>
+
+Layers:<br>
+<select>
+  <option value="volvo">Main</option>
+  <option value="saab">Saab</option>
+  <option value="mercedes">Mercedes</option>
+  <option value="audi">Audi</option>
+</select>
+<br><br>
+
+
+Parcels:<br>
+<select>
+  <option value="volvo">My parcel</option>
+  <option value="saab">Saab</option>
+  <option value="mercedes">Mercedes</option>
+  <option value="audi">Audi</option>
+</select>
+
+
+
+<input type="button" value="POST CONTENT" style="margin-top: 50px; width: 200px;"><br>
+<input type="button" value="BUY LAYER" style="margin-top: 15px;  width: 200px;"><br>
+<input type="button" value="BUY PARCEL" style="margin-top:  15px;  width: 200px;">
+</div>
+</div>
+<script>
+ 
+	 	var osmUrl = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+	 	    osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	 	    osm = L.tileLayer(osmUrl, {
+	 	        maxZoom:20,
+	 	        attribution: osmAttrib
+	 	    });
+        var plot= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "magenta", weight: 1, opacity: 0.8});
+        var plotT= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        var plotB= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        var plotL= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        var plotR= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        var plotTL= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        var plotTR= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        var plotBL= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        var plotBR= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+var locX=44.53520899999999,locY=11.531547000000046;
+var statusChannel="https://get.status.im/chat/public/geography";
+	 	// initialize the map on the "map" div with a given center and zoom
+	 	var map = L.map('map').setView([44.53520899999999,11.531547000000046], 12).addLayer(osm);
+
+	 	// Script for adding marker on map click
+	 	function onMapClick(e) {
+
+	 	    var marker = L.marker(e.latlng, {
+	 	        draggable: true,
+	 	        title: "Resource location",
+	 	        alt: "Resource Location",
+	 	        riseOnHover: true
+	 	    }).addTo(map)
+	 	        .bindPopup(e.latlng.toString()).openPopup();
+
+	 	    // Update marker on changing it's position
+	 	    marker.on("dragend", function (ev) {
+
+	 	        var chagedPos = ev.target.getLatLng();
+	 	        this.bindPopup(chagedPos.toString()).openPopup();
+
+	 	    });
+	 	}
+
+	 	map.on('click', onMapClick);
+    
+    map.on('moveend', function(e) {
+   	var bounds = map.getBounds();
+  	console.log("center "+map.getCenter()+" "+map.getCenter().lat+" "+locX+" "+map.getCenter().lng+" "+locY);
+	if(locX>map.getCenter().lat+0.001){
+		console.log("moved")
+		drawPlot(locX-0.002,locY);
+		locX=locX-0.002;
+	}
+	if(locX<map.getCenter().lat-0.001){
+		console.log("moved")
+		drawPlot(locX+0.002,locY);
+		locX=locX+0.002;
+	}
+	if(locY>map.getCenter().lng+0.001){
+		console.log("moved")
+		drawPlot(locX,locY-0.002);
+		locY=locY-0.002;
+	}
+	if(locY<map.getCenter().lng-0.001){
+		console.log("moved")
+		drawPlot(locX,locY+0.002);
+		locY=locY+0.002;
+	}
+
+//||(locX<map.getCenter().lat-0.001)||(locY>map.getCenter().lng+0.001)||(locY<map.getCenter().lng-0.001)){
+
+});
+
+
+function ParseDMS(input) {
+    var parts = input.split(/[^\d\w\.]+/);
+    var lat = ConvertDMSToDD(parts[0], parts[1], parts[2], parts[3]);
+    var lng = ConvertDMSToDD(parts[4], parts[5], parts[6], parts[7]);
+    
+    drawPlot(lat,lng);
+    //alert(lat+" "+lng);
+}
+
+function ConvertDMSToDD(degrees, minutes, seconds, direction) {
+    var dd = Number(degrees) + Number(minutes)/60 + Number(seconds)/(60*60);
+
+    if (direction == "S" || direction == "W") {
+        dd = dd * -1;
+    } // Don't do anything for N or E
+    return dd;
+}
+
+ParseDMS("44°32'6''n 11°31'53''e");
+
+
+function drawPlot(theLat,theLng){
+ 
+var rad = 700  //meters
+   
+//var theLat=44.53512;
+//var theLng=11.53148;
+var coords=map.getCenter();
+//theLat=coords.lat;
+//theLng=coords.lng;
+console.log(theLat+" "+theLng);
+    var sideA = Math.pow(rad, 2);
+    var sideB = Math.pow(rad, 2);
+    var sideC = Math.sqrt(sideA+sideB);
+
+    theLen = sideC/2   // Meters 
+
+    theLenAdjtoDegreesLat = 10;  //Lat is a constant.
+    theLenAdjtoDegreesLng = 10;  //Lng changes with lat.
+
+
+    xMin = theLng - 0.001;
+    yMin = theLat -  0.001;
+    xMax = theLng +  0.001;
+    yMax = theLat +  0.001;
+
+    var bounds = [[yMin,xMin], [yMax, xMax]];
+map.removeLayer(plot);
+plot=L.rectangle(bounds, {fillColor:'none',color: "magenta", weight: 1, opacity: 0.8});
+plot.addTo(map);
+map.removeLayer(plotT);
+bounds = [[yMin-0.002,xMin], [yMax-0.002, xMax]];
+plotT=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+plotT.addTo(map);
+
+map.removeLayer(plotB);
+bounds = [[yMin+0.002,xMin], [yMax+0.002, xMax]];
+plotB=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+plotB.addTo(map);
+
+map.removeLayer(plotL);
+bounds = [[yMin,xMin-0.002], [yMax, xMax-0.002]];
+plotL=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+plotL.addTo(map);
+
+map.removeLayer(plotR);
+bounds = [[yMin,xMin+0.002], [yMax, xMax+0.002]];
+plotR=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+plotR.addTo(map);
+
+map.removeLayer(plotTL);
+bounds = [[yMin-0.002,xMin-0.002], [yMax-0.002, xMax-0.002]];
+plotTL=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+plotTL.addTo(map);
+
+map.removeLayer(plotTR);
+bounds = [[yMin+0.002,xMin-0.002], [yMax+0.002, xMax-0.002]];
+plotTR=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+plotTR.addTo(map);
+
+map.removeLayer(plotBL);
+bounds = [[yMin+0.002,xMin+0.002], [yMax+0.002, xMax+0.002]];
+plotBL=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+plotBL.addTo(map);
+
+map.removeLayer(plotBR);
+bounds = [[yMin-0.002,xMin+0.002], [yMax-0.002, xMax+0.002]];
+plotBR=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+plotBR.addTo(map);
+console.log("done");
+    }
+    
+   function openStatus(){
+window.open(statusChannel,'_blank');
+}
+
+function hide (elements) {
+  elements = elements.length ? elements : [elements];
+  for (var index = 0; index < elements.length; index++) {
+    elements[index].style.display = 'none';
+  }
+}
+
+function show (elements) {
+  elements = elements.length ? elements : [elements];
+  for (var index = 0; index < elements.length; index++) {
+    elements[index].style.display = 'inline-block';
+  }
+}
+</script>
     </body>
+
+
 </html>
