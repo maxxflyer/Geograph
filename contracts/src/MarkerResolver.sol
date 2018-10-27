@@ -2,7 +2,7 @@ pragma solidity ^0.4.24;
 
 import "./ens/ENS.sol";
 
-contract AdResolver {
+contract MarkerResolver {
 
     bytes4 constant INTERFACE_META_ID = 0x01ffc9a7;
     bytes4 constant ADDR_INTERFACE_ID = 0x3b3b57de;
@@ -32,6 +32,7 @@ contract AdResolver {
         string name;
         PublicKey pubkey;
         mapping(string=>string) text;
+        mapping(string=>uint256) textEndTime;
         mapping(uint256=>bytes) abis;
         bytes multihash;
     }
@@ -133,10 +134,21 @@ contract AdResolver {
      * @param key The key to set.
      * @param value The text data value to set.
      */
-    function setText(bytes32 node, string key, string value) public only_owner(node) {
+    function setText(bytes32 node, string key, string value) public payable {
+        require(msg.value >= 10000000000000000, "need to pay at least 10000000000000000 wei for addign a marker");
+        require(now > records[node].textEndTime[key], "existing text marker has not expired");
         records[node].text[key] = value;
+        records[node].textEndTime[key] = now + 2 minutes;
         emit TextChanged(node, key, key);
     }
+
+    // function setTextViaDAI(bytes32 node, string key, string value) public {
+    //     dai.safeTransferFrom()
+    //     require(now > records[node].textEndTime[key], "existing text marker has not expired");
+    //     records[node].text[key] = value;
+    //     records[node].textEndTime[key] = now + 2 minutes;
+    //     emit TextChanged(node, key, key);
+    // }
 
     /**
      * Returns the text data associated with an ENS node and key.
@@ -145,6 +157,9 @@ contract AdResolver {
      * @return The associated text data.
      */
     function text(bytes32 node, string key) public view returns (string) {
+        if(now > records[node].textEndTime[key]) {
+            return "";
+        }
         return records[node].text[key];
     }
 

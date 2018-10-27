@@ -14,7 +14,7 @@ contract('ENS', (accounts) => {
     let ens;
     let registrar;
     let publicResolver;
-    let adResolver;
+    let markerResolver;
 
     const owner = web3.utils.toChecksumAddress(accounts[0]);
     const squatter = web3.utils.toChecksumAddress(accounts[1]);
@@ -67,7 +67,7 @@ contract('ENS', (accounts) => {
         assert.equal(nameRegistered, 'hello');
     })
 
-    it('can create a Ad Resolver and ask for a text', async() => {
+    it('can create a MarkerResolver and ask for a text', async() => {
         const rootDomain = 'geo';
         const domainToOwn = ['myname', rootDomain];
         
@@ -82,9 +82,9 @@ contract('ENS', (accounts) => {
         assert.equal(registeredOwner, squatter);
 
         const ad = 'coffee for 1 DAI!';
-        const adResolver = await deployContract('AdResolver', ens.options.address);
-        await adResolver.methods.setText(node, 'ad', ad).send({from:squatter, gas});
-        const adRegistered = await adResolver.methods.text(node, 'ad').call();
+        const markerResolver = await deployContract('MarkerResolver', ens.options.address);
+        await markerResolver.methods.setText(node, 'ad', ad).send({from:squatter, gas, value: 10000000000000000});
+        const adRegistered = await markerResolver.methods.text(node, 'ad').call();
 
         assert.equal(adRegistered, ad);
     })
