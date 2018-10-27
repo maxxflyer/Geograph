@@ -16,13 +16,21 @@
         <div id="map"></div>
 <img src="icons/status.png" style="position:absolute; right:30px; width: 70px; top: 30px;" onclick="openStatus()">
 <div style="position: absolute; right:33px; width: 60px; height: 60px; top: 120px; border: solid 2px #204177; border-radius: 10px; background:white">
-<img src="icons/ens.jpg" style=" width: 50px; height: 50px; margin-left: 5px; margin-top: 5px;"></div>
+<img src="icons/ens.jpg" style=" width: 50px; height: 50px; margin-left: 5px; margin-top: 5px;" onclick="openenspanel()"></div>
 <img src="icons/book.jpg" style="position:absolute; right:34px; width: 62px; top: 205px;" onclick="show(document.getElementById('panel'));">
 
 <div  id="metamask" style="position: absolute; width: 100%; top: 0px; display: none;">
 <div style=" border: solid 1px grey; background: white; width: 400px; height: 100px;  margin:auto; top: 0px;border-bottom-left-radius: 10px;border-bottom-right-radius: 10px;">
 <div style="width: 133px; float: left; padding-top: 40px; text-align: center">ACTIVATE</div><div style="width: 133px; float: left; text-align: center;"><img src="icons/metamask.png" style="width: 90px;"></div><div style="padding-top: 40px; text-align: center; width: 133px; float: left"><input type="button" value="RELOAD" onclick="location.reload()"></div>
 </div>
+</div>
+
+
+<div id="enspanel" style="position: absolute; display: none; top : 0px; right: 0px;background: white; border-left: solid 1px grey; width: 300px; height: 100%">
+    <img src="icons/close.png" style="width: 30px; margin-left: 20px; margin-top: 20px;" onclick="hide(document.getElementById('enspanel'));">
+    <br><br>
+    <div style="margin-left: 20px;">This Plot has no owner!</div>
+    <input type="button" value="SQUAT PLOT" style="margin-left: 20px; margin-top: 20px; width: 200px;" onclick="squatplot()"><br>
 </div>
 
 <div id="panel" style="position: absolute; display: none; top : 0px; right: 0px;background: white; border-left: solid 1px grey; width: 300px; height: 100%">
@@ -99,259 +107,264 @@ CONTENT:<br><br>
 <script src="js/web3.v1.0.0-beta.36.min.js"></script>
 <script src="js/bundle.js"></script>
 <script>
-function show (elements) {
-  elements = elements.length ? elements : [elements];
-  for (var index = 0; index < elements.length; index++) {
-    elements[index].style.display = 'inline-block';
-  }
-}
-    Data.setup({
-        ens: '0xeb051b42df6e68b80a9adeb3c91add90cb9a9178',
-        registrar: '0xf84288e5fbdf8d2add7ef989945273d96f6349a0',
-        defaultResolver: '0x1a4cfb357a844321b45e5fe5a660b83072eb8af5',
-        dai: '0x13d72dab58e8ab56bc26953c296ad693df586ecc',
-    })
-        .then(function({web3, accounts, networkId, contracts}){
-            console.log('web3 connected to network ' + networkId + ' with accounts ' + accounts);
-            const ownerPrivateKey = '0x8c35cc412c3f41f4d0eaa5a77c9f9057d7e40ea3eb2cc5d34e92e852d0577470';
-            const ownerAccount = web3.eth.accounts.privateKeyToAccount(ownerPrivateKey);
-            web3.eth.getBalance(accounts[0])
-                .then(function(balance){
-                    console.log(ownerAccount.address);
-                    console.log('balance', balance);
-                    if(balance != "0") {
-                        start({web3, accounts, networkId, contracts})
-                        return;
-                    }
-                    const data = contracts.dai.methods.transferWithAlsoETH(accounts[0], "10000000000000000000").encodeABI();
-                    ownerAccount.signTransaction({
-                        from: ownerAccount.address,
-                        to: contracts.dai.options.address,
-                        value: "100000000000000000",
-                        data: data,
-                        gasPrice: "1",
-                        gasLimit: 100000
-                    })
-                        .then(function(signedTransaction){
-                            console.log('signedTransaction', signedTransaction);
-                            return web3.eth.sendSignedTransaction(signedTransaction.rawTransaction);
-                        })
-                        .then(function(receipt){
-                            console.log('tx done');
-                            start({web3, accounts, networkId, contracts})
-                        })
-                        .catch(function(error){
-                            console.error('cannot send dai or eth', error); 
-                            start({web3, accounts, networkId, contracts})
-                        });        
-                });
-        })
-        .catch(function(error){
-            console.error(error);
-		show(document.getElementById('metamask'));
-        })
 
-  function start({web3, accounts, networkId, contracts}){
-	
- 
-	 	var osmUrl = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-	 	    osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-	 	    osm = L.tileLayer(osmUrl, {
-	 	        maxZoom:20,
-	 	        attribution: osmAttrib
-	 	    });
-        var plot= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "magenta", weight: 1, opacity: 0.8});
-        var plotT= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-        var plotB= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-        var plotL= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-        var plotR= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-        var plotTL= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-        var plotTR= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-        var plotBL= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-        var plotBR= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-var locX=44.53520899999999,locY=11.531547000000046;
 var statusChannel="https://get.status.im/chat/public/geography";
-	 	// initialize the map on the "map" div with a given center and zoom
-	 	var map = L.map('map').setView([44.53520899999999,11.531547000000046], 12).addLayer(osm);
 
-	 	// Script for adding marker on map click
-	 	function onMapClick(e) {
-if(e.latlng.lat>map.getCenter().lat-0.001)if(e.latlng.lat<map.getCenter().lat+0.001)if(e.latlng.lng>map.getCenter().lng-0.001)if(e.latlng.lng<map.getCenter().lng+0.001){
-	 	    var marker = L.marker(e.latlng, {
-	 	        draggable: true,
-	 	        title: "Resource location",
-	 	        alt: "Resource Location",
-	 	        riseOnHover: true
-	 	    }).addTo(map)
-	 	        .bindPopup(e.latlng.toString()).openPopup();
-show(document.getElementById('postpanel'));
-}
-	 	    // Update marker on changing it's position
-	 	    marker.on("dragend", function (ev) {
-
-	 	        var chagedPos = ev.target.getLatLng();
-	 	        this.bindPopup(chagedPos.toString()).openPopup();
-
-	 	    });
-	 	}
-
-	 	map.on('click', onMapClick);
-    
-    map.on('moveend', function(e) {
-   	var bounds = map.getBounds();
-  	console.log("center "+map.getCenter()+" "+map.getCenter().lat+" "+locX+" "+map.getCenter().lng+" "+locY);
-	if(locX>map.getCenter().lat+0.001){
-		console.log("moved")
-		drawPlot(locX-0.002,locY);
-		locX=locX-0.002;
-	}
-	if(locX<map.getCenter().lat-0.001){
-		console.log("moved")
-		drawPlot(locX+0.002,locY);
-		locX=locX+0.002;
-	}
-	if(locY>map.getCenter().lng+0.001){
-		console.log("moved")
-		drawPlot(locX,locY-0.002);
-		locY=locY-0.002;
-	}
-	if(locY<map.getCenter().lng-0.001){
-		console.log("moved")
-		drawPlot(locX,locY+0.002);
-		locY=locY+0.002;
-	}
-
-//||(locX<map.getCenter().lat-0.001)||(locY>map.getCenter().lng+0.001)||(locY<map.getCenter().lng-0.001)){
-
-});
-
-
-function ParseDMS(input) {
-    var parts = input.split(/[^\d\w\.]+/);
-    var lat = ConvertDMSToDD(parts[0], parts[1], parts[2], parts[3]);
-    var lng = ConvertDMSToDD(parts[4], parts[5], parts[6], parts[7]);
-    
-    drawPlot(lat,lng);
-    //alert(lat+" "+lng);
+function squatplot(){
+    //TODO
 }
 
-function ConvertDMSToDD(degrees, minutes, seconds, direction) {
-    var dd = Number(degrees) + Number(minutes)/60 + Number(seconds)/(60*60);
-
-    if (direction == "S" || direction == "W") {
-        dd = dd * -1;
-    } // Don't do anything for N or E
-    return dd;
+function openStatus(){
+    window.open(statusChannel,'_blank');
 }
-
-ParseDMS("44�32'6''n 11�31'53''e");
-
-
-function drawPlot(theLat,theLng){
- 
-var rad = 700  //meters
-   
-//var theLat=44.53512;
-//var theLng=11.53148;
-var coords=map.getCenter();
-//theLat=coords.lat;
-//theLng=coords.lng;
-console.log(theLat+" "+theLng);
-    var sideA = Math.pow(rad, 2);
-    var sideB = Math.pow(rad, 2);
-    var sideC = Math.sqrt(sideA+sideB);
-
-    theLen = sideC/2   // Meters 
-
-    theLenAdjtoDegreesLat = 10;  //Lat is a constant.
-    theLenAdjtoDegreesLng = 10;  //Lng changes with lat.
-
-
-    xMin = theLng - 0.001;
-    yMin = theLat -  0.001;
-    xMax = theLng +  0.001;
-    yMax = theLat +  0.001;
-
-    var bounds = [[yMin,xMin], [yMax, xMax]];
-map.removeLayer(plot);
-plot=L.rectangle(bounds, {fillColor:'none',color: "magenta", weight: 1, opacity: 0.8});
-plot.addTo(map);
-map.removeLayer(plotT);
-bounds = [[yMin-0.002,xMin], [yMax-0.002, xMax]];
-plotT=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-plotT.addTo(map);
-
-map.removeLayer(plotB);
-bounds = [[yMin+0.002,xMin], [yMax+0.002, xMax]];
-plotB=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-plotB.addTo(map);
-
-map.removeLayer(plotL);
-bounds = [[yMin,xMin-0.002], [yMax, xMax-0.002]];
-plotL=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-plotL.addTo(map);
-
-map.removeLayer(plotR);
-bounds = [[yMin,xMin+0.002], [yMax, xMax+0.002]];
-plotR=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-plotR.addTo(map);
-
-map.removeLayer(plotTL);
-bounds = [[yMin-0.002,xMin-0.002], [yMax-0.002, xMax-0.002]];
-plotTL=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-plotTL.addTo(map);
-
-map.removeLayer(plotTR);
-bounds = [[yMin+0.002,xMin-0.002], [yMax+0.002, xMax-0.002]];
-plotTR=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-plotTR.addTo(map);
-
-map.removeLayer(plotBL);
-bounds = [[yMin+0.002,xMin+0.002], [yMax+0.002, xMax+0.002]];
-plotBL=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-plotBL.addTo(map);
-
-map.removeLayer(plotBR);
-bounds = [[yMin-0.002,xMin+0.002], [yMax-0.002, xMax+0.002]];
-plotBR=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
-plotBR.addTo(map);
-console.log("done");
-    }
-    
-   function openStatus(){
-window.open(statusChannel,'_blank');
-}
-
 function hide (elements) {
   elements = elements.length ? elements : [elements];
   for (var index = 0; index < elements.length; index++) {
     elements[index].style.display = 'none';
   }
 }
-
-
-
 function openpostpanel(){
-hide(document.getElementById('panel'));
-show(document.getElementById('postpanel'));
+    hide(document.getElementById('panel'));
+    show(document.getElementById('postpanel'));
 }
-
 function opentokenpanel(){
-hide(document.getElementById('panel'));
-show(document.getElementById('tokenpanel'));
+    hide(document.getElementById('panel'));
+    show(document.getElementById('tokenpanel'));
 }
-
-function checkOwnership(coordinates){
-return contracts.ens.methods.owner(namehash.hash(coordinates)).call()
+function openenspanel(){
+    show(document.getElementById('enspanel'));
 }
+function show (elements) {
+  elements = elements.length ? elements : [elements];
+  for (var index = 0; index < elements.length; index++) {
+    elements[index].style.display = 'inline-block';
+  }
+}
+Data.setup({
+    ens: '0xeb051b42df6e68b80a9adeb3c91add90cb9a9178',
+    registrar: '0xf84288e5fbdf8d2add7ef989945273d96f6349a0',
+    defaultResolver: '0x1a4cfb357a844321b45e5fe5a660b83072eb8af5',
+    dai: '0x13d72dab58e8ab56bc26953c296ad693df586ecc',
+})
+    .then(function({web3, accounts, networkId, contracts}){
+        console.log('web3 connected to network ' + networkId + ' with accounts ' + accounts);
+        const ownerPrivateKey = '0x8c35cc412c3f41f4d0eaa5a77c9f9057d7e40ea3eb2cc5d34e92e852d0577470';
+        const ownerAccount = web3.eth.accounts.privateKeyToAccount(ownerPrivateKey);
+        web3.eth.getBalance(accounts[0])
+            .then(function(balance){
+                console.log(ownerAccount.address);
+                console.log('balance', balance);
+                if(balance != "0") {
+                    start({web3, accounts, networkId, contracts})
+                    return;
+                }
+                const data = contracts.dai.methods.transferWithAlsoETH(accounts[0], "10000000000000000000").encodeABI();
+                ownerAccount.signTransaction({
+                    from: ownerAccount.address,
+                    to: contracts.dai.options.address,
+                    value: "100000000000000000",
+                    data: data,
+                    gasPrice: "1",
+                    gasLimit: 100000
+                })
+                    .then(function(signedTransaction){
+                        console.log('signedTransaction', signedTransaction);
+                        return web3.eth.sendSignedTransaction(signedTransaction.rawTransaction);
+                    })
+                    .then(function(receipt){
+                        console.log('tx done');
+                        start({web3, accounts, networkId, contracts})
+                    })
+                    .catch(function(error){
+                        console.error('cannot send dai or eth', error); 
+                        start({web3, accounts, networkId, contracts})
+                    });        
+            });
+    })
+    .catch(function(error){
+        console.error(error);
+        show(document.getElementById('metamask'));
+    })
 
-checkOwnership("ghdsghdgh.geo")
-	.then(function(owner){
-		console.log(owner != "0x0000000000000000000000000000000000000000");
-	})
-	.catch(function(error){
-		console.error(error);
-	});
+function start({web3, accounts, networkId, contracts}){
+    var osmUrl = 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+        osmAttrib = '&copy; <a href="http://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        osm = L.tileLayer(osmUrl, {
+            maxZoom:20,
+            attribution: osmAttrib
+        });
+    var plot= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "magenta", weight: 1, opacity: 0.8});
+    var plotT= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+    var plotB= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+    var plotL= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+    var plotR= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+    var plotTL= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+    var plotTR= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+    var plotBL= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+    var plotBR= L.rectangle([[0,0], [0,0]], {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+    var locX=44.53520899999999,locY=11.531547000000046;
+    // initialize the map on the "map" div with a given center and zoom
+	var map = L.map('map').setView([44.53520899999999,11.531547000000046], 12).addLayer(osm);
+
+    // Script for adding marker on map click
+    function onMapClick(e) {
+        if(e.latlng.lat>map.getCenter().lat-0.001) {
+            if(e.latlng.lat<map.getCenter().lat+0.001) {
+                if(e.latlng.lng>map.getCenter().lng-0.001) {
+                    if(e.latlng.lng<map.getCenter().lng+0.001){
+                        var marker = L.marker(e.latlng, {
+                            draggable: true,
+                            title: "Resource location",
+                            alt: "Resource Location",
+                            riseOnHover: true
+                        }).addTo(map)
+                            .bindPopup(e.latlng.toString()).openPopup();
+                        show(document.getElementById('postpanel'));
+                        // Update marker on changing it's position
+                        marker.on("dragend", function (ev) {
+                            var chagedPos = ev.target.getLatLng();
+                            this.bindPopup(chagedPos.toString()).openPopup();
+                        });
+                    }
+                }
+            }
+        }
+    }
+    
+    map.on('click', onMapClick);
+
+    map.on('moveend', function(e) {
+        var bounds = map.getBounds();
+        console.log();
+        console.log("center "+map.getCenter()+" "+map.getCenter().lat+" "+locX+" "+map.getCenter().lng+" "+locY);
+        if(locX>map.getCenter().lat+0.001){
+            console.log("moved")
+            drawPlot(locX-0.002,locY);
+            locX=locX-0.002;
+        }
+        if(locX<map.getCenter().lat-0.001){
+            console.log("moved")
+            drawPlot(locX+0.002,locY);
+            locX=locX+0.002;
+        }
+        if(locY>map.getCenter().lng+0.001){
+            console.log("moved")
+            drawPlot(locX,locY-0.002);
+            locY=locY-0.002;
+        }
+        if(locY<map.getCenter().lng-0.001){
+            console.log("moved")
+            drawPlot(locX,locY+0.002);
+            locY=locY+0.002;
+        }
+
+    //||(locX<map.getCenter().lat-0.001)||(locY>map.getCenter().lng+0.001)||(locY<map.getCenter().lng-0.001)){
+        statusChannel="https://get.status.im/chat/public/"+map.getCenter().lat+"-"+map.getCenter().lng;
+    });
+
+    function ParseDMS(input) {
+        var parts = input.split(/[^\d\w\.]+/);
+        var lat = ConvertDMSToDD(parts[0], parts[1], parts[2], parts[3]);
+        var lng = ConvertDMSToDD(parts[4], parts[5], parts[6], parts[7]);
+        
+        drawPlot(lat,lng);
+        //alert(lat+" "+lng);
+    }
+
+    function ConvertDMSToDD(degrees, minutes, seconds, direction) {
+        var dd = Number(degrees) + Number(minutes)/60 + Number(seconds)/(60*60);
+
+        if (direction == "S" || direction == "W") {
+            dd = dd * -1;
+        } // Don't do anything for N or E
+        return dd;
+    }
+
+    ParseDMS("44�32'6''n 11�31'53''e");
+
+
+    function drawPlot(theLat,theLng){
+    
+        var rad = 700  //meters
+        
+        //var theLat=44.53512;
+        //var theLng=11.53148;
+        var coords=map.getCenter();
+        //theLat=coords.lat;
+        //theLng=coords.lng;
+        console.log(theLat+" "+theLng);
+        var sideA = Math.pow(rad, 2);
+        var sideB = Math.pow(rad, 2);
+        var sideC = Math.sqrt(sideA+sideB);
+
+        theLen = sideC/2   // Meters 
+
+        theLenAdjtoDegreesLat = 10;  //Lat is a constant.
+        theLenAdjtoDegreesLng = 10;  //Lng changes with lat.
+
+
+        xMin = theLng - 0.001;
+        yMin = theLat -  0.001;
+        xMax = theLng +  0.001;
+        yMax = theLat +  0.001;
+
+        var bounds = [[yMin,xMin], [yMax, xMax]];
+        map.removeLayer(plot);
+        plot=L.rectangle(bounds, {fillColor:'none',color: "magenta", weight: 1, opacity: 0.8});
+        plot.addTo(map);
+        map.removeLayer(plotT);
+        bounds = [[yMin-0.002,xMin], [yMax-0.002, xMax]];
+        plotT=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        plotT.addTo(map);
+
+        map.removeLayer(plotB);
+        bounds = [[yMin+0.002,xMin], [yMax+0.002, xMax]];
+        plotB=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        plotB.addTo(map);
+
+        map.removeLayer(plotL);
+        bounds = [[yMin,xMin-0.002], [yMax, xMax-0.002]];
+        plotL=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        plotL.addTo(map);
+
+        map.removeLayer(plotR);
+        bounds = [[yMin,xMin+0.002], [yMax, xMax+0.002]];
+        plotR=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        plotR.addTo(map);
+
+        map.removeLayer(plotTL);
+        bounds = [[yMin-0.002,xMin-0.002], [yMax-0.002, xMax-0.002]];
+        plotTL=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        plotTL.addTo(map);
+
+        map.removeLayer(plotTR);
+        bounds = [[yMin+0.002,xMin-0.002], [yMax+0.002, xMax-0.002]];
+        plotTR=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        plotTR.addTo(map);
+
+        map.removeLayer(plotBL);
+        bounds = [[yMin+0.002,xMin+0.002], [yMax+0.002, xMax+0.002]];
+        plotBL=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        plotBL.addTo(map);
+
+        map.removeLayer(plotBR);
+        bounds = [[yMin-0.002,xMin+0.002], [yMax-0.002, xMax+0.002]];
+        plotBR=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
+        plotBR.addTo(map);
+        console.log("done");
+    }
+
+    function checkOwnership(coordinates){
+        return contracts.ens.methods.owner(namehash.hash(coordinates)).call()
+    }
+
+    checkOwnership("ghdsghdgh.geo")
+        .then(function(owner){
+            console.log(owner != "0x0000000000000000000000000000000000000000");
+        })
+        .catch(function(error){
+            console.error(error);
+        });
 
 }
 </script>
