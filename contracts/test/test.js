@@ -18,6 +18,7 @@ contract('ENS', (accounts) => {
 
     const owner = web3.utils.toChecksumAddress(accounts[0]);
     const squatter = web3.utils.toChecksumAddress(accounts[1]);
+    const buyer = web3.utils.toChecksumAddress(accounts[2]);
 
     beforeEach(async () =>{
         ens = await deployContract('ENSRegistry');
@@ -67,7 +68,7 @@ contract('ENS', (accounts) => {
         assert.equal(nameRegistered, 'hello');
     })
 
-    it('can create a MarkerResolver and ask for a text', async() => {
+    it('can create a MarkerResolver and add a marker via DAI', async() => {
         const rootDomain = 'geo';
         const domainToOwn = ['myname', rootDomain];
         
@@ -81,11 +82,41 @@ contract('ENS', (accounts) => {
         const registeredOwner = await ens.methods.owner(node).call();
         assert.equal(registeredOwner, squatter);
 
-        const ad = 'coffee for 1 DAI!';
-        const markerResolver = await deployContract('MarkerResolver', ens.options.address);
-        await markerResolver.methods.setText(node, 'ad', ad).send({from:squatter, gas, value: 10000000000000000});
-        const adRegistered = await markerResolver.methods.text(node, 'ad').call();
+        const text = 'coffee for 1 DAI!';
+        const dai = await deployContract('DAI');
+        const markerResolver = await deployContract('MarkerResolver', ens.options.address, dai.options.address);
+        await dai.methods.transfer(buyer, "1000000000000000000").send({from:owner,gas});
+        await dai.methods.approve(markerResolver.options.address, "1000000000000000000").send({from:buyer, gas});
+        await markerResolver.methods.addMarkerViaDAI(buyer, node, text, 120).send({from:squatter, gas});
+        const numberOfMarkers = await markerResolver.methods.numMarkers(node).call();
+        assert.equal(numberOfMarkers, "1");
+        const firstMarkerText = await markerResolver.methods.marker(node, 0).call();
+        assert.equal(firstMarkerText, text);
+    });
 
-        assert.equal(adRegistered, ad);
-    })
+    it('can create a MarkerResolver and add a marker via DAI (approve and call)', async() => {
+        const rootDomain = 'geo';
+        const domainToOwn = ['myname', rootDomain];
+        
+        const registrar = await deployContract('FIFSRegistrar', ens.options.address, namehash.hash(rootDomain));
+
+        await ens.methods.setSubnodeOwner(zero, web3.utils.sha3(rootDomain), registrar.options.address).send({from: owner, gas});
+        await registrar.methods.register(web3.utils.sha3(domainToOwn[0]), squatter).send({from: squatter, gas});
+        
+        const node = namehash.hash(domainToOwn.join('.'));
+
+        const registeredOwner = await ens.methods.owner(node).call();
+        assert.equal(registeredOwner, squatter);
+
+        const text = 'coffee for 1 DAI!';
+        const dai = await deployContract('DAI');
+        const markerResolver = await deployContract('MarkerResolver', ens.options.address, dai.options.address);
+        await dai.methods.transfer(buyer, "1000000000000000000").send({from:owner,gas});
+        const data = markerResolver.methods.addMarkerViaDAI(buyer, node, text, 120).encodeABI();
+        await dai.methods.approveAndCall("1000000000000000000", markerResolver.options.address, data).send({from:buyer, gas});
+        const numberOfMarkers = await markerResolver.methods.numMarkers(node).call();
+        assert.equal(numberOfMarkers, "1");
+        const firstMarkerText = await markerResolver.methods.marker(node, 0).call();
+        assert.equal(firstMarkerText, text);
+    });
 });
