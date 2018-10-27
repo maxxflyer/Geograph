@@ -10,4 +10,4 @@ WORKDIR /setup
 COPY . /setup
 RUN yarn
 
-CMD ["yarn", "setup"]
+CMD ["yarn", "setup", "http://ganache:8545"]

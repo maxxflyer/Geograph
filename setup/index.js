@@ -1,7 +1,12 @@
 const Web3 = require('web3');
 const namehash = require('eth-ens-namehash');
 
-const web3 = new Web3("http://ganache:8545");
+const args = process.argv;
+const nodeUrl = args[2] || "http://localhost:8545";
+
+console.log('USING NODE AT : ' + nodeUrl);
+
+const web3 = new Web3(nodeUrl);
 const gas = 4000000;
 
 function pause(duration) {
@@ -40,15 +45,22 @@ async function run(accounts) {
         .deploy({data:ENSRegistryByteCode})
         .send({from: owner, gas});
 
+    console.log('ENS REGISTRY DEPLOYED AT : ' + ens.options.address);
+
+    const rootDomain = 'geo';
+
     const registrar = await new web3.eth.Contract(FIFSRegistrarContractABI)
-        .deploy({data:FIFSRegistrarByteCode, arguments:[ens.options.address, namehash.hash('geo'), zero]})
+        .deploy({data:FIFSRegistrarByteCode, arguments:[ens.options.address, namehash.hash(rootDomain), zero]})
         .send({from:owner, gas});
 
-    await ens.methods.setSubnodeOwner(zero, web3.utils.sha3('geo'), registrar.options.address).send({from: owner, gas});
-    await registrar.methods.register(web3.utils.sha3('myname'), squatter).send({from: squatter, gas});
+    console.log('FIFS REGISTRAR DEPLOYED AT : ' + registrar.options.address);
 
-    const registeredOwner = await ens.methods.owner(namehash.hash('myname.geo')).call();
-    console.log('registered owner of myname: ', registeredOwner);
+    const domainToOwn = ['myname', rootDomain];
+    await ens.methods.setSubnodeOwner(zero, web3.utils.sha3(rootDomain), registrar.options.address).send({from: owner, gas});
+    await registrar.methods.register(web3.utils.sha3(domainToOwn[0]), squatter).send({from: squatter, gas});
+
+    const registeredOwner = await ens.methods.owner(namehash.hash(domainToOwn.join('.'))).call();
+    console.log('registered owner of : ' + domainToOwn.join('.'), registeredOwner);
 }
 
 setup()
