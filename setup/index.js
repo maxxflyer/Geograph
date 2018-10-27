@@ -101,5 +101,4 @@ async function run({networkId, contractInfos}) {
 }
 
 setup()
-    .then(console.log)
     .catch(console.error);

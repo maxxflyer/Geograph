@@ -1,5 +1,6 @@
 <html>
     <head>
+        <title>Earth's Own Alternate Layer</title>
 <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
 <link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css">
 <style>
@@ -142,7 +143,7 @@ function ConvertDMSToDD(degrees, minutes, seconds, direction) {
     return dd;
 }
 
-ParseDMS("44°32'6''n 11°31'53''e");
+ParseDMS("44ï¿½32'6''n 11ï¿½31'53''e");
 
 
 function drawPlot(theLat,theLng){
@@ -233,6 +234,29 @@ function show (elements) {
     elements[index].style.display = 'inline-block';
   }
 }
+</script>
+
+<script src="js/web3.v1.0.0-beta.36.min.js"></script>
+<script src="js/bundle.js"></script>
+<script>
+    Data.setup({
+        ens: '0xeb051b42df6e68b80a9adeb3c91add90cb9a9178',
+        registrar: '0xf84288e5fbdf8d2add7ef989945273d96f6349a0',
+        defaultResolver: '0x13d72dab58e8ab56bc26953c296ad693df586ecc'
+    })
+        .then(function({web3, accounts, networkId, contracts}){
+            console.log('web3 connected to netwotk ' + networkId + ' with accounts ' + accounts);
+            const location = '7638n675e.geo';
+            contracts.ens.methods.owner(namehash.hash(location)).call()
+                .then(function(registeredOwner){
+                    console.log(registeredOwner);
+                })
+            
+
+        })
+        .catch(function(error){
+            console.error(error);
+        })
 </script>
     </body>
 
