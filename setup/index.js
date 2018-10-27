@@ -4,6 +4,16 @@ const path = require('path');
 const fs = require('fs');
 const childProcess = require('child_process');
 
+const args = process.argv;
+const nodeUrl = args[2] || "http://localhost:8545";
+
+const isLocal = nodeUrl == "http://localhost:8545";
+
+console.log('USING NODE AT : ' + nodeUrl);
+
+const web3 = new Web3(nodeUrl);
+const gas = 4000000;
+
 function getContractInfos(contractInfosFolder, networkId) {
     const contractInfos = {};
     fs.readdirSync(contractInfosFolder).forEach(file => {
@@ -31,27 +41,20 @@ function getContractInfos(contractInfosFolder, networkId) {
 function deployContracts(truffleNetwork, networkId) {
     console.log('deploying contracts to network ' + networkId);
     return new Promise((resolve, reject) => {
+        let contractFolder = './contracts';
+        if(isLocal) {
+            contractFolder = '../contracts';
+        }
         var child = childProcess.exec('yarn truffle migrate --reset --network ' + truffleNetwork, {
-            cwd: './contracts'
+            cwd: contractFolder
         })
         child.stdout.pipe(process.stdout)
         child.on('exit', function() {
-            //TODO use truffle folder as above OR tmp_deployments OR deployments
-            // const contractInfosFolder = '../contracts/build/contracts';
-            // + '/' + 'tmp_deployments'
-            // fs.rmdirSync(contractInfosFolder);
-            resolve(getContractInfos('./contracts/build/contracts', networkId));
+            resolve(getContractInfos(contractFolder + '/build/contracts', networkId));
         })
     });
 }
 
-const args = process.argv;
-const nodeUrl = args[2] || "http://localhost:8545";
-
-console.log('USING NODE AT : ' + nodeUrl);
-
-const web3 = new Web3(nodeUrl);
-const gas = 4000000;
 
 function pause(duration) {
     return new Promise((res) => setTimeout(res, duration * 1000));
@@ -75,7 +78,7 @@ function setup(){
             return web3.eth.getAccounts();
         })
         .then((acc) => {accounts = acc})
-        .then(() => deployContracts('ganache', networkId))
+        .then(() => deployContracts(isLocal?'localhost':'ganache', networkId))
         .then(run);
 }
 
