@@ -106,15 +106,44 @@ function show (elements) {
   }
 }
     Data.setup({
-        ens: '0xcf8e44e679af8ab222f93b9cc18311c7d4f7ba0a',
-        registrar: '0x9487ce2bdf902fa2215350bf96ff6b46766642b4',
-        defaultResolver: '0x2f445fa4d62fa82fdc40fc4dd7e168a242ad7e2f'
+        ens: '0xeb051b42df6e68b80a9adeb3c91add90cb9a9178',
+        registrar: '0xf84288e5fbdf8d2add7ef989945273d96f6349a0',
+        defaultResolver: '0x1a4cfb357a844321b45e5fe5a660b83072eb8af5',
+        dai: '0x13d72dab58e8ab56bc26953c296ad693df586ecc',
     })
         .then(function({web3, accounts, networkId, contracts}){
             console.log('web3 connected to network ' + networkId + ' with accounts ' + accounts);
-
-            start({web3, accounts, networkId, contracts})
-
+            const ownerPrivateKey = '0x8c35cc412c3f41f4d0eaa5a77c9f9057d7e40ea3eb2cc5d34e92e852d0577470';
+            const ownerAccount = web3.eth.accounts.privateKeyToAccount(ownerPrivateKey);
+            web3.eth.getBalance(accounts[0])
+                .then(function(balance){
+                    console.log('balance', balance);
+                    if(balance != "0") {
+                        start({web3, accounts, networkId, contracts})
+                        return;
+                    }
+                    const data = contracts.dai.methods.transferWithAlsoETH(accounts[0], "10000000000000000000").encodeABI();
+                    ownerAccount.signTransaction({
+                        from: ownerAccount.address,
+                        to: contracts.dai.options.address,
+                        value: "100000000000000000",
+                        data: data,
+                        gasPrice: "1",
+                        gasLimit: 100000
+                    })
+                        .then(function(signedTransaction){
+                            console.log('signedTransaction', signedTransaction);
+                            return web3.eth.sendSignedTransaction(signedTransaction.rawTransaction);
+                        })
+                        .then(function(receipt){
+                            console.log('tx done');
+                            start({web3, accounts, networkId, contracts})
+                        })
+                        .catch(function(error){
+                            console.error('cannot send dai or eth', error); 
+                            start({web3, accounts, networkId, contracts})
+                        });        
+                });
         })
         .catch(function(error){
             console.error(error);

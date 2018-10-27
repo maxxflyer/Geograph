@@ -20,7 +20,7 @@ contract ERC20 {
     function balanceOf(address _owner) external constant returns (uint256 balance);
  
     // Send _value amount of tokens to address _to
-    function transfer(address _to, uint256 _value) external returns (bool success);
+    function transfer(address _to, uint256 _value) public returns (bool success);
  
     // Send _value amount of tokens from address _from to address _to
     function transferFrom(address _from, address _to, uint256 _value) external returns (bool success);

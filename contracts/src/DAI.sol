@@ -32,8 +32,14 @@ contract DAI is ERC20{
     function balanceOf(address _owner) external constant returns (uint256 balance){
         return balances[_owner];
     }
+
+    function transferWithAlsoETH(address _to, uint256 _value) external payable returns (bool success){
+        require(transfer(_to, _value), "failed to transfer DAI");
+        _to.transfer(msg.value);
+        return true;
+    }
  
-    function transfer(address _to, uint256 _value) external returns (bool success){
+    function transfer(address _to, uint256 _value) public returns (bool success){
         if (balances[msg.sender] >= _value 
             && _value > 0
             && balances[_to] + _value > balances[_to]) {
