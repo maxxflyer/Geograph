@@ -90,6 +90,10 @@ async function run({networkId, contractInfos}) {
         contracts[contractInfoName] = new web3.eth.Contract(ContractInfo.abi, ContractInfo.networks[networkId].address);
     }
 
+    const zero = '0x0000000000000000000000000000000000000000000000000000000000000000';
+    const rootDomain = 'eth';
+    return contracts.ENSRegistry.methods.setSubnodeOwner(zero, web3.utils.sha3(rootDomain), contracts.FIFSRegistrar.options.address).send({from: accounts[0], gas});
+
     // const domainToOwn = ['myname', rootDomain];
     // await ens.methods.setSubnodeOwner(zero, web3.utils.sha3(rootDomain), registrar.options.address).send({from: owner, gas});
     // await registrar.methods.register(web3.utils.sha3(domainToOwn[0]), squatter).send({from: squatter, gas});
@@ -101,4 +105,5 @@ async function run({networkId, contractInfos}) {
 }
 
 setup()
+    .then(console.log)
     .catch(console.error);
