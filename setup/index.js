@@ -1,4 +1,5 @@
 const Web3 = require('web3');
+const namehash = require('eth-ens-namehash');
 
 const path = require('path');
 const fs = require('fs');
@@ -92,14 +93,13 @@ async function run({networkId, contractInfos}) {
 
     const zero = '0x0000000000000000000000000000000000000000000000000000000000000000';
     const rootDomain = 'eth';
-    return contracts.ENSRegistry.methods.setSubnodeOwner(zero, web3.utils.sha3(rootDomain), contracts.FIFSRegistrar.options.address).send({from: accounts[0], gas});
+    await contracts.ENSRegistry.methods.setSubnodeOwner(zero, web3.utils.sha3(rootDomain), contracts.FIFSRegistrar.options.address).send({from: accounts[0], gas});
 
-    // const domainToOwn = ['myname', rootDomain];
-    // await ens.methods.setSubnodeOwner(zero, web3.utils.sha3(rootDomain), registrar.options.address).send({from: owner, gas});
-    // await registrar.methods.register(web3.utils.sha3(domainToOwn[0]), squatter).send({from: squatter, gas});
+    const domainToOwn = ['NDQuNTM1IDExLjUzMQ'.toLowerCase(), rootDomain];
+    await contracts.FIFSRegistrar.methods.register(web3.utils.sha3(domainToOwn[0]), accounts[1]).send({from: accounts[1], gas});
 
-    // const registeredOwner = await ens.methods.owner(namehash.hash(domainToOwn.join('.'))).call();
-    // console.log('registered owner of : ' + domainToOwn.join('.'), registeredOwner);
+    const registeredOwner = await contracts.ENSRegistry.methods.owner(namehash.hash(domainToOwn.join('.'))).call();
+    console.log('registered owner of : ' + domainToOwn.join('.'), registeredOwner);
 
     // await ens.methods.setResolver(namehash.hash('myname.geo'), publicResolver.options.address).send({from: squatter});
 }
