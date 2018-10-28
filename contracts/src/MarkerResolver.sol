@@ -50,7 +50,7 @@ contract MarkerResolver {
     DAI dai;
 
     mapping (bytes32 => Record) records;
-    uint256 ownerBalance; // TODO add withdraw method
+    mapping(address => uint256) ownerBalances; // TODO add withdraw method
 
     modifier only_owner(bytes32 node) {
         require(ens.owner(node) == msg.sender);
@@ -99,7 +99,7 @@ contract MarkerResolver {
     function setText(bytes32 node, string key, string value) public payable {
         require(msg.value >= 10000000000000000, "need to pay at least 10000000000000000 wei for addign a marker");
         require(now > records[node].textEndTime[key], "existing text marker has not expired");
-        ownerBalance += msg.value;
+        ownerBalances[ens.owner(node)] += msg.value;
         records[node].text[key] = value;
         records[node].textEndTime[key] = now + 2 minutes;
         emit TextChanged(node, key, key);
@@ -130,7 +130,7 @@ contract MarkerResolver {
 
     function addMarker(bytes32 node, string _text, uint256 duration) public payable {
         require(msg.value >= (100000000000000 * duration) / 60, "need to pay at least 100000000000000 wei per minutes for adding a marker"); // less than 1 minute are free :)
-        ownerBalance += msg.value;
+        ownerBalances[ens.owner(node)] += msg.value;
         _addMarker(node, _text, duration);
     }
 

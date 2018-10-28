@@ -98,9 +98,9 @@ Decimals:<br><br>
 <div id="postpanel" style="padding-left: 20px;position: absolute; display: none; top : 0px; right: 0px;background: white; border-left: solid 1px grey; width: 300px; height: 100%">
 <img src="icons/close.png" style="width: 30px; margin-left: 0px; margin-top: 20px;" onclick="hide(document.getElementById('postpanel'));">
 <br><br><br>
-CONTENT:<br><br>
+Add Marker:<br><br>
 <input type="text" style="200px"><br><br>
-<input type="submit" value="POST"> ( 0.1 DAI )
+<input id="submitMarker" type="submit" value="POST" onclick="addMarker()"> ( 0.1 DAI )
 
 </div>
 
@@ -109,6 +109,7 @@ CONTENT:<br><br>
 <script>
 
 var squatplot;
+var addMarker;
 
 var statusChannel="https://get.status.im/chat/public/geography";
 
@@ -186,14 +187,35 @@ Data.setup({
 
 function start({web3, accounts, networkId, contracts}){
 
-    squatplot = function(){
-        contracts.registrar.methods.register(web3.utils.sha3("dhshd"), accounts[0])
+    const plotENSString = "dhshd";
+    const plotENSNode = namehash.hash(plotENSString + ".eth");
+
+    addMarker = function() {
+        const data = contracts.defaultResolver.methods.addMarkerViaDAI(accounts[0], plotENSNode , 'some market text', 120).encodeABI();
+        contracts.dai.methods.approveAndCall("1000000000000000000", contracts.defaultResolver.options.address, data)
             .send({from:accounts[0],gas:4000000})
             .then(function(receipt){
+                alert('marker added');
                 console.log(receipt);
                 //TODO
             })
             .catch(function(error){
+                alert('error while adding marker');
+                console.error(error);
+                //TODO
+            })
+    }
+
+    squatplot = function(){
+        contracts.registrar.methods.register(web3.utils.sha3("dhshd"), accounts[0])
+            .send({from:accounts[0],gas:4000000})
+            .then(function(receipt){
+                alert('you now own the plot');
+                console.log(receipt);
+                //TODO
+            })
+            .catch(function(error){
+                alert('error while trying to take ownership of the plot');
                 console.error(error);
                 //TODO
             })
