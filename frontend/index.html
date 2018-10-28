@@ -110,6 +110,7 @@ Add Marker:<br><br>
 
 var squatplot;
 var addMarker;
+var marker;
 
 var statusChannel="https://get.status.im/chat/public/geography";
 
@@ -138,6 +139,20 @@ function show (elements) {
   for (var index = 0; index < elements.length; index++) {
     elements[index].style.display = 'inline-block';
   }
+}
+function convertToDms(dd, isLng) {
+  var dir = dd < 0
+    ? isLng ? 'W' : 'S'
+    : isLng ? 'E' : 'N';
+
+  var absDd = Math.abs(dd);
+  var deg = absDd | 0;
+  var frac = absDd - deg;
+  var min = (frac * 60) | 0;
+  var sec = frac * 3600 - min * 60;
+  // Round it to 2 decimal points.
+  sec = Math.round(sec * 100) / 100;
+  return deg + "°" + min + "'" + sec + '"' + dir;
 }
 Data.setup({
     ens: '0xeb051b42df6e68b80a9adeb3c91add90cb9a9178',
@@ -246,7 +261,8 @@ function start({web3, accounts, networkId, contracts}){
             if(e.latlng.lat<map.getCenter().lat+0.001) {
                 if(e.latlng.lng>map.getCenter().lng-0.001) {
                     if(e.latlng.lng<map.getCenter().lng+0.001){
-                        var marker = L.marker(e.latlng, {
+                        if (marker)map.removeLayer(marker);
+                         marker = L.marker(e.latlng, {
                             draggable: true,
                             title: "Resource location",
                             alt: "Resource Location",
