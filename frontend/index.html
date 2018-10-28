@@ -221,6 +221,7 @@ function start({web3, accounts, networkId, contracts}){
         contracts.dai.methods.approveAndCall("1000000000000000000", contracts.defaultResolver.options.address, data)
             .send({from:accounts[0],gas:4000000})
             .then(function(receipt){
+                marker.fixed = true;
                 closepostpanel();
                 showMessage('marker added');
                 console.log(receipt);
@@ -276,7 +277,7 @@ function start({web3, accounts, networkId, contracts}){
             if(e.latlng.lat<map.getCenter().lat+0.001) {
                 if(e.latlng.lng>map.getCenter().lng-0.001) {
                     if(e.latlng.lng<map.getCenter().lng+0.001){
-                        if (marker)map.removeLayer(marker);
+                        if (marker && !marker.fixed)map.removeLayer(marker);
                          marker = L.marker(e.latlng, {
                             draggable: true,
                             title: "Resource location",
