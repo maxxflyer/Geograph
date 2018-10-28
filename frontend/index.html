@@ -16,7 +16,7 @@
         <div id="map"></div>
 <img src="icons/status.png" style="position:absolute; right:30px; width: 70px; top: 30px;" onclick="openStatus()">
 <div style="position: absolute; right:33px; width: 60px; height: 60px; top: 120px; border: solid 2px #204177; border-radius: 10px; background:white">
-<img src="icons/ens.jpg" style=" width: 50px; height: 50px; margin-left: 5px; margin-top: 5px;" onclick="openenspanel()"></div>
+<img id="ensButton" src="icons/ens.jpg" style=" width: 50px; height: 50px; margin-left: 5px; margin-top: 5px;" onclick="openenspanel()"></div>
 <img src="icons/book.jpg" style="position:absolute; right:34px; width: 62px; top: 205px;" onclick="show(document.getElementById('panel'));">
 
 <div  id="metamask" style="position: absolute; width: 100%; top: 0px; display: none;">
@@ -120,6 +120,8 @@ function showMessage(text) {
     setTimeout(function(){alert(text)},1);
 }
 
+var plotsOwned = {};
+var plotOwner;
 var squatplot;
 var addMarker;
 var marker;
@@ -149,6 +151,12 @@ function opentokenpanel(){
 }
 function openenspanel(){
     show(document.getElementById('enspanel'));
+}
+function hideENSButton(){
+    hide(document.getElementById('ensButton'));
+}
+function showENSButton(){
+    show(document.getElementById('ensButton'));
 }
 function closeenspanel(){
     hide(document.getElementById('enspanel'));
@@ -250,6 +258,7 @@ function start({web3, accounts, networkId, contracts}){
         contracts.registrar.methods.register(web3.utils.sha3(coordinates), accounts[0])
             .send({from:accounts[0],gas:4000000})
             .then(function(receipt){
+                drawPlot(locX,locY);
                 closeenspanel();
                 showMessage('you now own the plot');
                 console.log(receipt);
@@ -369,7 +378,7 @@ function start({web3, accounts, networkId, contracts}){
         theLat = Math.floor(theLat*1000) / 1000;
         theLng = Math.floor(theLng*1000) / 1000;
     
-        map.removeLayer(plot);
+        if(plot && !plot.fixed)map.removeLayer(plot);
         map.removeLayer(plotT);
         map.removeLayer(plotB);
         map.removeLayer(plotL);
@@ -384,9 +393,14 @@ function start({web3, accounts, networkId, contracts}){
         console.log('ensAddress', ensAddress);
         contracts.ens.methods.owner(namehash.hash(ensAddress)).call()
             .then(function(owner){
+                plotOwner = owner;
                 var color = "red";
                 if(owner == '0x0000000000000000000000000000000000000000') {
                     color = "green"
+                    showENSButton();
+                } else {
+                    
+                    hideENSButton();
                 }
                 console.log(owner);
                 var rad = 700  //meters
@@ -417,6 +431,9 @@ function start({web3, accounts, networkId, contracts}){
                 
                 plot=L.rectangle(bounds, {fillColor:'none',color: color, weight: 1, opacity: 0.8});
                 plot.addTo(map);
+                if(owner.toLowerCase() == accounts[0].toLowerCase()) {
+                    plot.fixed = true;
+                }
                 
                 bounds = [[yMin-size,xMin], [yMax-size, xMax]];
                 plotT=L.rectangle(bounds, {fillColor:'none',color: "gray", weight: 1, opacity: 0.3});
@@ -458,6 +475,7 @@ function start({web3, accounts, networkId, contracts}){
                 plotBR.addTo(map);
                 console.log("done");
             })
+            
     }
 }
 </script>
