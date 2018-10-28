@@ -108,6 +108,10 @@ Add Marker:<br><br>
 <script src="js/bundle.js"></script>
 <script>
 
+function showMessage(text) {
+    setTimeout(function(){alert(text)},1);
+}
+
 var squatplot;
 var addMarker;
 var marker;
@@ -127,12 +131,19 @@ function openpostpanel(){
     hide(document.getElementById('panel'));
     show(document.getElementById('postpanel'));
 }
+function closepostpanel(){
+    hide(document.getElementById('panel'));
+    hide(document.getElementById('postpanel'));
+}
 function opentokenpanel(){
     hide(document.getElementById('panel'));
     show(document.getElementById('tokenpanel'));
 }
 function openenspanel(){
     show(document.getElementById('enspanel'));
+}
+function closeenspanel(){
+    hide(document.getElementById('enspanel'));
 }
 function show (elements) {
   elements = elements.length ? elements : [elements];
@@ -206,16 +217,18 @@ function start({web3, accounts, networkId, contracts}){
     const plotENSNode = namehash.hash(plotENSString + ".eth");
 
     addMarker = function() {
-        const data = contracts.defaultResolver.methods.addMarkerViaDAI(accounts[0], plotENSNode , 'some market text', 120).encodeABI();
+        const data = contracts.defaultResolver.methods.addMarkerViaDAI(accounts[0], plotENSNode , 'some market text', 1200000).encodeABI();
         contracts.dai.methods.approveAndCall("1000000000000000000", contracts.defaultResolver.options.address, data)
             .send({from:accounts[0],gas:4000000})
             .then(function(receipt){
-                alert('marker added');
+                closepostpanel();
+                showMessage('marker added');
                 console.log(receipt);
                 //TODO
             })
             .catch(function(error){
-                alert('error while adding marker');
+                closepostpanel();
+                showMessage('error while adding marker');
                 console.error(error);
                 //TODO
             })
@@ -225,12 +238,14 @@ function start({web3, accounts, networkId, contracts}){
         contracts.registrar.methods.register(web3.utils.sha3("dhshd"), accounts[0])
             .send({from:accounts[0],gas:4000000})
             .then(function(receipt){
-                alert('you now own the plot');
+                closeenspanel();
+                showMessage('you now own the plot');
                 console.log(receipt);
                 //TODO
             })
             .catch(function(error){
-                alert('error while trying to take ownership of the plot');
+                closeenspanel();
+                showMessage('error while trying to take ownership of the plot');
                 console.error(error);
                 //TODO
             })
