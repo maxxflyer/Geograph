@@ -52,9 +52,14 @@ New standard layers should be added later, this may need all plot owners to vote
 6)alerts
 7)commercial
 
-
-
 MARKET
+The system offers a basic resolver.
+Further resolvers following our standard could be created and monetized.
+Contracts for groups and states can be found in the market.
+The market offers the tools to resell/barter plots/layers too.
+The market offers the contract for sub-plotting your plot and resell/rent-out your plots.
+
+
 
 
 
