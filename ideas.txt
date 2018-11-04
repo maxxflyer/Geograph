@@ -76,10 +76,12 @@ Plots/groups/states can have extensions
 An extension allows to add basic dapps associated to the plot/groups/state and to make them visible on the interface.
 An example is a wallpaper
 Extensions are usually bought with money on the market.
-The market is visible directly from the interface, you search and pay/install the extension (a link passing the id of the plot/group/state to the extension once opened), the new extension appears as a button for quck opening directly from the interface/map.
+The market is visible directly from the interface, you search and pay/install the extension (when you add an extension you just add a link passing the id of the plot/group/state to the extension once opened), the new extension appears as a button for quck opening directly from the interface/map.
 
 VISIBILITY LIST AND SEARCH
-You can buy a subomain from us and become visible in a list/search. Your subdomain redirects to your plot coordinates.
+You can buy a subdomain from us and become visible in a list/search. Your subdomain redirects to your plot coordinates.
+We should have state.geodesy and allow statename.state.geodesy and we should keep track of all states.
+Same for group.geodesy and groupname.group.geodesy
 
 
  
