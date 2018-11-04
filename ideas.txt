@@ -18,6 +18,9 @@ It can delegate/allow external people/contracts to control a plot (controllers).
 10)create post/layer
 11)send/accept partnership
 12)invite/remove person/dao/AI in the community
+13)change plot resolver  (need owner's final permission)
+
+The resolver should be also the owner of the domain.eth (coordinates.eth)
 
 GROUPS
 Groups can obtain control over a plot. Groups can be private or DAOS or made by other groups.
