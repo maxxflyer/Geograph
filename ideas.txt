@@ -82,6 +82,54 @@ VISIBILITY LIST AND SEARCH
 You can buy a subdomain from us and become visible in a list/search. Your subdomain redirects to your plot coordinates.
 We should have state.geodesy and allow statename.state.geodesy and we should keep track of all states.
 Same for group.geodesy and groupname.group.geodesy
+and for extension.geodesy for extensionname.extension.geodesy
+
+FUNDS
+1)Sponsors
+2)Partnerships
+3)Geodesy Market
+4)Crowdfunding
+5)Squatting and reselling some key places
+
+Sponsors - group of angels/ethereum foundation/others
+
+Partnerships
+Aragon can offer DAO tools, the creation of modules for Aragon DAOS wil give us a plus.
+Aragon may understand and find interest, we could ask to such projects to fund us for the creation of the tools we need to connect to their technology. So bassicaly we talk about sponsors who have a direct interest, lots of money, and want to be connected.
+I will make a research and produce a list of possible partners.
+We can find partnerships by aggregating layers from different platforms, and ask them to contribute in the creation. In exchange they get a visible layer.
+
+Geodesy Market
+The income is from selling special contracts, such as groups or states.
+And subdomains to gain visibility in the public list.
+We could sell commercial layers imposing them, and making them visible in the interface as commercial global layers.
+
+Crowdfunding
+AN ICO or a crowdfunding process.
+
+GEOD TOKEN
+There should be a token for each plot.
+If you have a token you get a discount on Geodesy Market
+When you apply a resolver to a plot you get a token (only once), so basically tokens are minted when enabling a plot on geodesy.
+You get a token when you create a group or a state too.
+You get a token when you register a domain.
+There is a max amount of tokens.
+Part are devoted to minting during ceration of domains/groups/states.
+Part for airdrops  etc. etc.
+Once the related part is delivered you may start paying GEODs to create groups/states
+Tokens are used to publish sales on Geodesy Market, to make your plot/subplot more visible for buyers, tokens used for publishing are burnt.
+If geodesy market is ownerless, part of the income goes to Geodesy DAO (controlled by token holders, to manage Geodesy Market), part of it is used to buy and burn GEODs.
+Optional:
+The owner of a plot can ask to make a deposit in GEODs forseeing the chance that he later has to delete a post and this will cost.
+When the post is deleted by the plot owner he gets back (tricky) an amount of GEODs that equal the cost of gas for deleting the post. The exceeding amount of GEODS is burnt.
+Plot owners can decide to make the business in DAI, ETH, and GEODS
+You can post in any unsquatted plot by burning GEODs
+In order to post on singularities you need to own GEODs. If you have 1 you can post on singularity n1, in order to post on any singularity you need 12 GEODs.
+
+
+
+
+
 
 
  
