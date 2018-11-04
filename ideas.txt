@@ -1,11 +1,11 @@
 LEDGERS
 
-GROUPS AND STATES
+RESOLVER
 
 Our standard resolver have more functions.
 It can delegate/allow external people/contracts to control a plot (controllers).
 
-1)reselling the plot
+1)reselling the plot (need owner's final permission)
 2)renting the plot
 3)setting post cost
 4)open/close the plot (open=free post, close=need permission)
@@ -15,13 +15,27 @@ It can delegate/allow external people/contracts to control a plot (controllers).
 6)enter/exit group/state
 7)create state
 8)create group
-9)give permission to group
+9)add/remove permission to moderator/group/controller
 10)create post/layer
 11)send/accept partnership
-12)invite/remove person/dao/AI in/from the community
-13)add/remove moderator/controller
+12)invite/remove person/dao/AI in the community
 
-When you enter a group you give permission to control 
+GROUPS
+Groups can obtain control over a plot. Groups can be private or DAOS or made by other groups.
+A private group is a contract controlled by a guy and a serie of moderators/groups/controllers.
+A group can be part of many groups at the same time
+
+STATES
+A state is something more important, states can only be DAOS.
+The phylosohy informing this decision is meant to avoid the raise of centralized powers (they can be anyway effective using groups).
+Once you accept to belong to a state, you give implicit control over your plot.
+You can exit a state at anytime.
+
+CONTROLLERS
+As a matter of fact Groups and States belong to the family of controllers.
+A controller can be a wallet, group, state, or any kind of contract.
+Once the controller obtains control it can do virtually anything.
+
 LAYERS
 
 MARKET
