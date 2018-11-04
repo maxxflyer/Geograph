@@ -19,6 +19,7 @@ It can delegate/allow external people/contracts to control a plot (controllers).
 11)send/accept partnership
 12)invite/remove person/dao/AI in the community
 13)change plot resolver  (need owner's final permission)
+14)renew ENS listing
 
 The resolver should be also the owner of the domain.eth (coordinates.eth)
 
