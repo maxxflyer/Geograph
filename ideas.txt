@@ -37,6 +37,22 @@ A controller can be a wallet, group, state, or any kind of contract.
 Once the controller obtains control it can do virtually anything.
 
 LAYERS
+There is a list of standard layers
+Such standard layers Names are loaded automatically by the interface
+No plot can hide the standard layers.
+New standard layers should be added later, this may need all plot owners to vote globally.
+
+1)text
+2)links
+3)video
+4)image
+3)feed
+4)dapps
+5)3d objects
+6)alerts
+7)commercial
+
+
 
 MARKET
 
