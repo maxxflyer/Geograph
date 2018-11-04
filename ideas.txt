@@ -1,6 +1,6 @@
 RESOLVER
 
-Our standard resolver havs various functions.
+Our standard resolver has various functions.
 It can delegate/allow external people/contracts to control a plot (controllers).
 
 1)reselling the plot (need owner's final permission)
