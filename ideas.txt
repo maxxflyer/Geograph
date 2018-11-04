@@ -127,6 +127,8 @@ You can post in any unsquatted plot by burning GEODs
 In order to post on singularities you need to own GEODs. If you have 1 you can post on singularity n1, in order to post on any singularity you need 12 GEODs.
 Deposits asked for posting are made in GEODs.
 The best is if we can establish the cost in DAI, and it adapts to GEODs cost, maybe buying GEODs in real time from Geodesy Market, this way when one must pay someting he has the chance to pay in ETH or DAI, but he is actually buyng using GEODs, and possibly burning them if that's the rule.
+Part of the tokens may go on Bancor, to offer a liquidity pool and to facilitate us the work, so maybe we don't have to build an exchange for GEODs.
+Part can be sold not with an ICO but via Geodesy Market at a growing price.
 
 
 
