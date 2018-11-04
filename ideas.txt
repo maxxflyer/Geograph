@@ -1,0 +1,30 @@
+LEDGERS
+
+GROUPS AND STATES
+
+Our standard resolver have more functions.
+It can delegate/allow external people/contracts to control a plot (controllers).
+
+1)reselling the plot
+2)renting the plot
+3)setting post cost
+4)open/close the plot (open=free post, close=need permission)
+3)setting layer cost
+4)open/close the plot layering (open=free layering, close=need permission)
+5)delete post/layer
+6)enter/exit group/state
+7)create state
+8)create group
+9)give permission to group
+10)create post/layer
+11)send/accept partnership
+12)invite/remove person/dao/AI in/from the community
+13)add/remove moderator/controller
+
+When you enter a group you give permission to control 
+LAYERS
+
+MARKET
+
+
+
