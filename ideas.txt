@@ -60,7 +60,8 @@ The market offers the tools to resell/barter plots/layers too.
 The market offers the contract for sub-plotting your plot and resell/rent-out your plots.
 The sub-plot conytract is a clone of the resolver, with all permissions/skills of the resolver.
 This way it is possible to split annd sub-split indefinitely your plot.
-The market offers exptensions like wordpress
+The market offers exptensions like wordpress.
+You can buy sell subdomains
 
 EARTH CORE AND SPACE
 The planet core is not accessible, non the less it can be squatted and visited via pure virtual reality.
@@ -71,12 +72,17 @@ We create a ledger starting from geodesy.earth
 We can later add geodesy.moon, gedesy.mars etc. etc.
 
 EXTENSIONS
-Plots/groups/states can ave extensions
+Plots/groups/states can have extensions
 An extension allows to add basic dapps associated to the plot/groups/state and to make them visible on the interface.
 An example is a wallpaper
 Extensions are usually bought with money on the market.
 The market is visible directly from the interface, you search and pay/install the extension (a link passing the id of the plot/group/state to the extension once opened), the new extension appears as a button for quck opening directly from the interface/map.
 
+VISIBILITY LIST AND SEARCH
+You can buy a subomain from us and become visible in a list/search. Your subdomain redirects to your plot coordinates.
+
+
+ 
 
 
 
