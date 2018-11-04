@@ -101,6 +101,7 @@ Aragon can offer DAO tools, the creation of modules for Aragon DAOS wil give us 
 Aragon may understand and find interest, we could ask to such projects to fund us for the creation of the tools we need to connect to their technology. So bassicaly we talk about sponsors who have a direct interest, lots of money, and want to be connected.
 I will make a research and produce a list of possible partners.
 We can find partnerships by aggregating layers from different platforms, and ask them to contribute in the creation. In exchange they get a visible layer.
+We can airdrop tokens to holders of partner projects
 
 Geodesy Market
 The income is from selling special contracts, such as groups or states.
