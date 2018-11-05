@@ -135,6 +135,10 @@ The best is if we can establish the cost in DAI, and it adapts to GEODs cost, ma
 Part of the tokens may go on Bancor, to offer a liquidity pool and to facilitate us the work, so maybe we don't have to build an exchange for GEODs.
 Part can be sold not with an ICO but via Geodesy Market at a growing price.
 
+VAULTS
+Each plot is/has a vault (solution to be discussed)
+The vault is under the control of the unique owner/DAO.
+
 
 
 
