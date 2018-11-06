@@ -1,3 +1,3 @@
 # geography
 
-https://gateway.ipfs.io/ipfs/QmacPwfoDMdScDaK34yvwaMZD27niBFrD9qwDyLt2HgXEm/geodesy.html
+https://gateway.ipfs.io/ipfs/QmTUift4vJLQcwUkEw1t4GLSSpwMSM37tjze8uTzSSpzaz/geodesy.html
